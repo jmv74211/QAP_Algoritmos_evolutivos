@@ -10,21 +10,23 @@ class Data{
 
     private:
 
-        vector<vector<unsigned int> > factorys;
+        vector<vector<int> > factorys;
 
-        vector<vector<unsigned int> > distances;
+        vector<vector<int> > distances;
 
-        unsigned int size;
+        int size;
 
     public:
 
         Data();
 
-        unsigned int getSize();
+        Data(const char * filename);
 
-        unsigned int getMatrixFactorys();
+        int getSize();
 
-        unsigned int getMatrixDistances();
+        vector<vector<int> > getMatrixFactorys();
+
+        vector<vector<int> > getMatrixDistances();
 
         int getFactory(unsigned i, unsigned j);
 
