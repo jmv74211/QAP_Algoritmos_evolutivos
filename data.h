@@ -34,6 +34,10 @@ class Data{
 
         void readFile(const char * filename);
 
+        void printFactorys();
+
+        void printDistances();
+
 };
 
 #endif
