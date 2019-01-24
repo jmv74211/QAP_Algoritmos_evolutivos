@@ -37,15 +37,21 @@ class Individual{
 
         void setSeed(int seed);
 
+        int getSize();
+
         vector<int> getVectorSolutions();
 
         void setVectorSolutions(int value, int position);
+
+        void exchange(int position1, int position2);
 
         bool operator<(Individual &compareIndividual);
 
         bool operator>(Individual &compareIndividual);
 
         bool operator==(Individual &compareIndividual);
+
+        bool adjustCost(int position1, int position2, Data &data);
 
 };
 

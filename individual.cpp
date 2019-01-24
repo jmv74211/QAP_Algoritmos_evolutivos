@@ -78,6 +78,7 @@ void Individual::print(){
     for(int i = 0; i < this->size; ++i ){
         cout << this->solutions[i] << " ";
     }
+    cout <<endl;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -113,6 +114,13 @@ void Individual::setSeed(int newSeed){
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+int Individual::getSize(){
+
+    return this->size;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 vector<int> Individual::getVectorSolutions(){
 
     return this->solutions;
@@ -124,6 +132,18 @@ void Individual::setVectorSolutions(int value, int position){
     if(position >= 0 && value >= 0)
         this->solutions[position] = value;
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void Individual::exchange(int position1, int position2){
+
+    if(position1 >=0 && position2 >= 0 && position1 < this->size && position2 < this->size){
+        int aux = this->solutions[position1];
+        this->solutions[position1] = this->solutions[position2];
+        this->solutions[position2] = aux;
+    }
+}
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -148,3 +168,17 @@ bool Individual::operator==(Individual &compareIndividual){
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+bool Individual::adjustCost(int position1, int position2, Data &data){
+
+    for(int i = 0; i < this->size; ++i){
+        if( i != position1 && i != position2)
+            this->cost += data.getFactory(position1,i) * (data.getDistance(this->solutions[position2],this->solutions[i]) - data.getDistance(this->solutions[position1],this->solutions[i]));
+            this->cost += data.getFactory(position2,i) * (data.getDistance(this->solutions[position1],this->solutions[i]) - data.getDistance(this->solutions[position2],this->solutions[i]));
+
+            this->cost += data.getFactory(i,position1) * (data.getDistance(this->solutions[i],this->solutions[position2]) - data.getDistance(this->solutions[i],this->solutions[position1]));
+            this->cost += data.getFactory(i,position2) * (data.getDistance(this->solutions[i],this->solutions[position1]) - data.getDistance(this->solutions[i],this->solutions[position2]));
+    }
+
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////

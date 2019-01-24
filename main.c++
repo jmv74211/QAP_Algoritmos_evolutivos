@@ -15,5 +15,7 @@ int main(){
     Individual individual = Individual(data, seed);
     Individual individual2 = Individual(data, 5);
 
+    individual.print();
+
     return 0;
 }
