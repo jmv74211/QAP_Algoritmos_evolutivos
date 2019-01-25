@@ -168,17 +168,25 @@ bool Individual::operator==(Individual &compareIndividual){
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-bool Individual::adjustCost(int position1, int position2, Data &data){
+
+void Individual::adjustCost(int position1, int position2, Data &data){
+
+    int accumulator = 0;
 
     for(int i = 0; i < this->size; ++i){
-        if( i != position1 && i != position2)
-            this->cost += data.getFactory(position1,i) * (data.getDistance(this->solutions[position2],this->solutions[i]) - data.getDistance(this->solutions[position1],this->solutions[i]));
-            this->cost += data.getFactory(position2,i) * (data.getDistance(this->solutions[position1],this->solutions[i]) - data.getDistance(this->solutions[position2],this->solutions[i]));
+        if( i != position1 && i != position2){
+            accumulator += data.getFactory(position1,i) * (data.getDistance(this->solutions[position2],this->solutions[i]) - data.getDistance(this->solutions[position1],this->solutions[i]));
+            accumulator += data.getFactory(position2,i) * (data.getDistance(this->solutions[position1],this->solutions[i]) - data.getDistance(this->solutions[position2],this->solutions[i]));
 
-            this->cost += data.getFactory(i,position1) * (data.getDistance(this->solutions[i],this->solutions[position2]) - data.getDistance(this->solutions[i],this->solutions[position1]));
-            this->cost += data.getFactory(i,position2) * (data.getDistance(this->solutions[i],this->solutions[position1]) - data.getDistance(this->solutions[i],this->solutions[position2]));
-    }
+            accumulator += data.getFactory(i,position1) * (data.getDistance(this->solutions[i],this->solutions[position2]) - data.getDistance(this->solutions[i],this->solutions[position1]));
+            accumulator += data.getFactory(i,position2) * (data.getDistance(this->solutions[i],this->solutions[position1]) - data.getDistance(this->solutions[i],this->solutions[position2]));
+        }
+     }
+
+    this->cost = this->cost + accumulator*(-1);
 
 }
+
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////

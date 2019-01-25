@@ -51,7 +51,7 @@ class Individual{
 
         bool operator==(Individual &compareIndividual);
 
-        bool adjustCost(int position1, int position2, Data &data);
+        void adjustCost(int position1, int position2, Data &data);
 
 };
 
