@@ -38,6 +38,10 @@ class Population{
          int calculatePoblationCost();
 
          void print();
+
+         void sortPopulation();
+
+         void newLamarckGeneration();
 };
 
 #endif // POPULATION_H

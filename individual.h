@@ -14,6 +14,7 @@ class Individual{
         int size;
         int seed;
         int cost;
+        int bestCost;
 
 
 
@@ -38,6 +39,10 @@ class Individual{
         void setSeed(int seed);
 
         int getSize();
+
+        int getBestCost();
+
+        void setBestCost(int newBestCost);
 
         vector<int> getVectorSolutions();
 

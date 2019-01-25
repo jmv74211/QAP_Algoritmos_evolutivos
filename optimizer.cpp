@@ -1,9 +1,13 @@
-#include "localsearch.h"
+#include "optimizer.h"
 
-LocalSearch::LocalSearch(){}
+#include <iostream>
+
+using namespace std;
+
+Optimizer::Optimizer(){}
 
 
-Individual LocalSearch::LocalSearch_1(Data &data,Individual &firstIndividual, int numIterations){
+Individual Optimizer::localSearch_1(Data &data,Individual firstIndividual, int numIterations){
 
        // Genera una solución/individuo inicial
        Individual individual = firstIndividual;
@@ -14,6 +18,7 @@ Individual LocalSearch::LocalSearch_1(Data &data,Individual &firstIndividual, in
        bool improve = false;
 
        do{
+           cout << iteration << endl;
            // Inicializamos la bandera de mejora
            improve = false;
 

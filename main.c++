@@ -1,6 +1,7 @@
 #include <iostream>
 #include "data.h"
 #include "population.h"
+#include "optimizer.h"
 
 #include <vector>
 
@@ -11,16 +12,38 @@ int main(){
     const int populationSeed = 2;
     const int individualsNum = 60;
     const int generationNum = 60000;
+    const int numIterations = 60000;
 
 
     Data data = Data("chr22a.dat");
 
-    /*Individual individual = Individual(data, populationSeed);
-    Individual individual2 = Individual(data, populationSeed);
+    Population population = Population(populationSeed, individualsNum, data);
 
-    individual.print();
+    population.sortPopulation();
 
-    individual2.print();*/
+    for( int i = 0; i < population.getSize(); ++i){
+        cout << population.getIndividual(i).getCost() << endl;
+    }
+
+
+
+    Optimizer optimizer = Optimizer();
+
+    Individual result = optimizer.localSearch_1(data,population.getIndividual(4) ,numIterations);
+
+    cout << "El coste final es --> " << result.getCost() << endl;
+
+
+
+
+
+
+
+
+
+
+
+    /*  TEST DE COMPROBAR FUNCIÓN AJUSTE Y CALCULAR COSTE DE UN INDIVIDUO
 
     Population population = Population(populationSeed, individualsNum, data);
 
@@ -43,6 +66,6 @@ int main(){
 
     cout << "Coste final calculado= " << individual.getCost() << endl;
 
-
+    */
     return 0;
 }
