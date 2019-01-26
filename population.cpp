@@ -4,9 +4,12 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+Population::Population(){}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 Population::Population(int seed, int individualsNum, Data data){
 
-    this->generationNumber = 0;
     this->seed = seed;
 
     srand(seed);
@@ -24,7 +27,6 @@ Population::Population(int seed, int individualsNum, Data data){
 
 Population::Population(vector<Individual> newIndividuals){
 
-    this->generationNumber = 0;
     this->individuals = newIndividuals;
 }
 
@@ -67,22 +69,6 @@ Individual Population::getIndividual(int position){
 
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-int Population::getGenerationNumber(){
-
-    return this->generationNumber;
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void Population::setGenerationNumber(int newGenerationNumber){
-
-    if(newGenerationNumber >= 0){
-        this->generationNumber = newGenerationNumber;
-    }
-
-}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -114,7 +100,6 @@ void Population::setSeed(int newSeed){
 void Population::print(){
 
     cout << "Tamaño de la población: " << this->getSize() <<endl;
-    cout << "Número de generación: " << this->generationNumber<<endl;
     cout << "Semilla de la población: " << this->seed <<endl;
 
     cout << "Imprimiendo los individuos de la población" <<endl<<endl;
@@ -162,15 +147,4 @@ void Population::sortPopulation(){
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void Population::newLamarckGeneration(){
 
-    for(int i = 0; i < this->getSize(); ++i){
-
-
-
-    }
-
-
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////

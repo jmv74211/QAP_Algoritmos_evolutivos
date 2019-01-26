@@ -24,6 +24,8 @@ class Individual{
 
         Individual(Data data, int seed);
 
+        Individual(Data data, int seed, vector<int> solutions);
+
         void initialize();
 
         void print();
@@ -47,6 +49,8 @@ class Individual{
         vector<int> getVectorSolutions();
 
         void setVectorSolutions(int value, int position);
+
+        void setVectorSolutions(vector<int> newSolutions);
 
         void exchange(int position1, int position2);
 

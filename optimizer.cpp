@@ -18,7 +18,6 @@ Individual Optimizer::localSearch_1(Data &data,Individual firstIndividual, int n
        bool improve = false;
 
        do{
-           cout << iteration << endl;
            // Inicializamos la bandera de mejora
            improve = false;
 

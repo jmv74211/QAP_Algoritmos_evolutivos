@@ -18,7 +18,7 @@ Individual::Individual(Data data, int seed){
 
     this->seed = seed;
 
-    this->size = data.getSize(); // ?
+    this->size = data.getSize();
 
     this->initialize();
 
@@ -27,6 +27,23 @@ Individual::Individual(Data data, int seed){
     this->bestCost = this->cost;
 
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Individual::Individual(Data data, int seed, vector<int> solutions){
+
+    this->seed = seed;
+
+    this->size = data.getSize();
+
+    this->solutions = solutions;
+
+    this->calculateCost(data);
+
+    this->bestCost = this->cost;
+
+}
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -146,6 +163,7 @@ void Individual::setBestCost(int newBestCost){
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// Importante actualizar el coste tras llamar a esta función
 void Individual::setVectorSolutions(int value, int position){
     if(position >= 0 && value >= 0)
         this->solutions[position] = value;
@@ -206,5 +224,11 @@ void Individual::adjustCost(int position1, int position2, Data &data){
 }
 
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void Individual::setVectorSolutions(vector<int> newSolutions){
+
+    this->solutions = newSolutions;
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
