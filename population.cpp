@@ -88,6 +88,22 @@ int Population::getSize(){
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+Individual Population::getBestIndividual(){
+
+   Individual bestIndividual = this->getIndividual(0);
+   int populationSize = this->getSize();
+
+   for(int i = 0; i < populationSize; ++i){
+        if(this->getIndividual(i) < bestIndividual)
+            bestIndividual = this->getIndividual(i);
+   }
+
+   return bestIndividual;
+
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 void Population::setSeed(int newSeed){
 
     if(newSeed > 0){

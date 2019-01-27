@@ -13,6 +13,7 @@ class GeneticAlgorithm{
         float mutationProbability;
         int seed;
         int generationNumber;
+        Individual bestIndividual;
 
     public:
 
@@ -34,9 +35,13 @@ class GeneticAlgorithm{
 
          void mutate(int position);
 
+         void checkBestIndividual();
+
 
 
         // GETTERS Y SETTERS
+
+         void setBestIndividual(Individual newBestIndividual);
 
          Data getData();
 

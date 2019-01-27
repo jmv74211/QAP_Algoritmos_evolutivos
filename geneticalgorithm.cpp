@@ -18,7 +18,7 @@ GeneticAlgorithm::GeneticAlgorithm(Data data, int seed){
      this->mutationProbability = 0.01;
      this->selectionProbability = 0.8;
      this->seed = seed;
-
+     this->bestIndividual = Individual(data,seed);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -30,6 +30,7 @@ GeneticAlgorithm::GeneticAlgorithm(Data data, Population population, int seed){
      this->mutationProbability = 0.01;
      this->selectionProbability = 0.8;
      this->seed = seed;
+     this->bestIndividual = population.getBestIndividual();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -52,8 +53,20 @@ void GeneticAlgorithm::newLamarckGeneration(int iterations){
         this->population.setIndividual(newIndividual,i);
     }
 
-    this->sort();
+    // Si el mejor individuo de la generación es mejor que el mejor individuo general encontrado, se actualiza
+    this->checkBestIndividual();
+}
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void GeneticAlgorithm::checkBestIndividual(){
+
+    // Obtenemos el mejor individuo de la generación
+    Individual bestIndividualGeneration = this->population.getBestIndividual();
+
+    // Si el mejor individuo de la generación es mejor que el mejor individuo general encontrado, se actualiza
+    if( bestIndividualGeneration< this->bestIndividual)
+        this->bestIndividual = bestIndividualGeneration;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -92,15 +105,6 @@ void GeneticAlgorithm::setPopulation(Population newPopulation){
 void GeneticAlgorithm::sort(){
 
     this->population.sortPopulation();
-
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-Individual GeneticAlgorithm::getBestIndividual(){
-
-    return this->population.getIndividual(0);
 
 }
 
@@ -217,6 +221,8 @@ void GeneticAlgorithm::generateParentsGeneration(){
     // Actualizamos la población a esta nueva generación de individuos.
     this->population.setIndividuals(newIndividuals);
 
+    // Si el mejor individuo de la generación es mejor que el mejor individuo general encontrado, se actualiza
+    this->checkBestIndividual();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -233,6 +239,9 @@ void GeneticAlgorithm::generateChildrenGeneration(){
     vector<Individual> newIndividuals;
     vector<int> solutionChild1;
     vector<int> solutionChild2;
+    vector<bool> fatherHasBeenCrossed; // Vector para comprobar si los padres ya se han cruzado
+    int random1,random2;
+    bool selected;
 
     int populationSize= this->population.getSize();
     int solutionSize = this->population.getIndividual(0).getSize();
@@ -243,12 +252,54 @@ void GeneticAlgorithm::generateChildrenGeneration(){
 
    for(int i = 0; i < populationSize  ; i+=2){
 
+       // Inicializamos el vector de booleanos
+       for(int j = 0 ; j < populationSize; ++j){
+            fatherHasBeenCrossed.push_back(false);
+       }
+
         // Limpiamos los vectores de soluciones
         solutionChild1.clear();
         solutionChild2.clear();
 
-        Individual father1 = this->population.getIndividual(i);
-        Individual father2 = this->population.getIndividual(i+1);
+        // Bandera para comprobar que se han seleccionado los padres
+        selected = false;
+
+        // Padres
+        Individual father1;
+        Individual father2;
+
+        // Mientras no se haya seleccionado a los padres
+        while(selected == false){
+
+            // Se genera las índices de los padres de forma aleatoria
+            random1 = rand()%populationSize;
+            random2 = rand()%populationSize;
+
+            // Escogemos dos padres diferentes
+            if(random1 != random2){
+                // Buscamos un padre que no haya sido usado
+                while( fatherHasBeenCrossed.at(random1) == true){
+                    random1 = (random1 + 1)%populationSize;
+                }
+                // Escogemos dicho padre
+                father1 = this->population.getIndividual(random1);
+                // Contamos a dicho padre como cruzado
+                fatherHasBeenCrossed.at(random1) = true;
+
+                // Buscamos un padre que no haya sido usado
+                while( fatherHasBeenCrossed.at(random2) == true){
+                    random2 = (random2 + 1)%populationSize;
+                }
+                // Escogemos dicho padre
+                father2 = this->population.getIndividual(random2);
+                fatherHasBeenCrossed.at(random2) = true;
+
+
+
+                selected = true;
+            }
+        }
+
 
         // Copiamos la primera mitad del primer individuo
         for(int j = 0; j < individualCenter; ++j){
@@ -293,17 +344,24 @@ void GeneticAlgorithm::generateChildrenGeneration(){
         // Creamos el primer individuo que se ha generado en el cruce
         Individual newIndividual = Individual(this->data,this->seed,solutionChild1);
         // Creamos el segundo individuo que se ha generado en el cruce
-        Individual newIndividual2 = Individual(this->data,this->seed,solutionChild1);
+        Individual newIndividual2 = Individual(this->data,this->seed,solutionChild2);
 
-        //Añadimos los individuos a la nueva población
+        //Añadimos los individuos al vector de individuos
         newIndividuals.push_back(newIndividual);
         newIndividuals.push_back(newIndividual2);
    }
 
+   // Creamos una población con los nuevos individuos
    Population childrenPopulation = Population(newIndividuals);
 
+   // Actualizamos la población con la nueva
    this->population = childrenPopulation;
 
+   // Ordenamos la población
+   this->sort();
+
+   // Si el mejor individuo de la generación es mejor que el mejor individuo general encontrado, se actualiza
+   this->checkBestIndividual();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -330,8 +388,9 @@ void GeneticAlgorithm::mutate(int position){
     individualSolutions.at(random2) = aux;
 
     // Actualizamos la mutación del individuo en nuestra población
-    this->population.getIndividual(position).setVectorSolutions(individualSolutions);
+    //this->population.getIndividual(position).setVectorSolutions(individualSolutions);
 
+    this->population.setIndividual(Individual(this->data, this->seed, individualSolutions), position);
     // Recalculamos el coste para dicho individuo
     this->population.getIndividual(position).calculateCost(this->data);
 }
@@ -350,6 +409,20 @@ void GeneticAlgorithm::setGenerationNumber(int newGenerationNumber){
 
     if(newGenerationNumber > 0)
         this->generationNumber = newGenerationNumber;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Individual GeneticAlgorithm::getBestIndividual(){
+
+    return this->bestIndividual;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void GeneticAlgorithm::setBestIndividual(Individual newBestIndividual){
+
+    this->bestIndividual = newBestIndividual;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////

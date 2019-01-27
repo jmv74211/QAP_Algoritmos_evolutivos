@@ -21,15 +21,101 @@ int main(){
 
     GeneticAlgorithm geneticAlgorithm = GeneticAlgorithm(data,population,geneticAlgorithmSeed);
 
+    // population.print();
+
+    cout << endl << endl << endl;
+
     geneticAlgorithm.newLamarckGeneration(numIterations);
 
+    // geneticAlgorithm.getPopulation().print();
 
-   for( int i = 0; i < geneticAlgorithm.getPopulation().getSize(); ++i){
+    int initalCost = population.calculatePoblationCost();
+    int optimizedCost = geneticAlgorithm.getPopulation().calculatePoblationCost();
+
+   // cout << endl << endl << " ####################################### " <<endl <<endl;
+
+    geneticAlgorithm.generateParentsGeneration();
+
+    geneticAlgorithm.getPopulation().print();
+
+    int parentsCost = geneticAlgorithm.getPopulation().calculatePoblationCost();
+
+    // cout << "Coste inicial = " << initalCost  << endl;
+    // cout << "Coste optimizado = " << optimizedCost << endl;
+    // cout << "Coste padres = " << parentsCost << endl;
+
+   //  cout << endl << endl << endl << endl<< endl << endl<< endl << endl<< endl << endl<< endl << endl;
+
+    geneticAlgorithm.generateChildrenGeneration();
+
+    int childrenCost = geneticAlgorithm.getPopulation().calculatePoblationCost();
+
+    geneticAlgorithm.getPopulation().print();
+
+    /*for( int i = 0; i < geneticAlgorithm.getPopulation().getSize(); ++i){
+        cout << geneticAlgorithm.getPopulation().getIndividual(i).getCost() << endl;
+    }*/
+
+    cout << "Coste inicial = " << initalCost  << endl;
+    cout << "Coste optimizado = " << optimizedCost << endl;
+    cout << "Coste padres = " << parentsCost << endl;
+    cout << "Coste hijos = " << childrenCost << endl;
+
+    cout << "El mejor individuo encontrado es " <<endl;
+    geneticAlgorithm.getBestIndividual().print();
+    cout << "Coste = " << geneticAlgorithm.getBestIndividual().getCost() << endl;
+
+    cout << endl << endl << endl << endl;
+
+    cout << "Mutación" <<endl;
+    geneticAlgorithm.getPopulation().getIndividual(59).print();
+    int coste1 = geneticAlgorithm.getPopulation().getIndividual(59).getCost();
+    geneticAlgorithm.mutate(59);
+    geneticAlgorithm.getPopulation().getIndividual(59).print();
+    int coste2 = geneticAlgorithm.getPopulation().getIndividual(59).getCost();
+    cout << "Coste 1 = " << coste1 <<endl;
+    cout << "Coste 2 = " << coste2 <<endl;
+
+   /*for( int i = 0; i < geneticAlgorithm.getPopulation().getSize(); ++i){
        cout << geneticAlgorithm.getPopulation().getIndividual(i).getCost() << endl;
    }
    geneticAlgorithm.generateParentsGeneration();
 
+   cout << endl << endl << endl;
+
+   cout << "Generación de padres" << endl;
+   geneticAlgorithm.sort();
+   geneticAlgorithm.getPopulation().print();
+   int cost = geneticAlgorithm.getPopulation().calculatePoblationCost();
+
    geneticAlgorithm.generateChildrenGeneration();
+
+   cout << "Generación de hijos" << endl;
+   geneticAlgorithm.sort();
+   geneticAlgorithm.getPopulation().print();
+
+   cout << endl;
+   cout << "Coste población padre = " << cost <<  endl;
+   cout << "Coste población hija = " << geneticAlgorithm.getPopulation().calculatePoblationCost() <<  endl;
+
+   geneticAlgorithm.mutate(0);
+   cout << endl << endl;
+   geneticAlgorithm.getPopulation().print();
+
+    */
+
+
+
+
+
+
+
+
+
+
+
+
+
 
    /* PRUEBA TORNEO BINARIO
     Individual i1 = geneticAlgorithm.getPopulation().getIndividual(0);

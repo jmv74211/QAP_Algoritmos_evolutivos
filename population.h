@@ -27,6 +27,8 @@ class Population{
 
          int getSeed();
 
+         Individual getBestIndividual();
+
          int getSize();
 
          void setSeed(int newSeed);
