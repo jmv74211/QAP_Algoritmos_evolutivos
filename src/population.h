@@ -27,6 +27,8 @@ class Population{
 
          int getSeed();
 
+         void setIndividualCost(int position, int newCost);
+
          Individual getBestIndividual();
 
          int getSize();

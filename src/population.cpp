@@ -113,6 +113,15 @@ void Population::setSeed(int newSeed){
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+void Population::setIndividualCost(int position, int newCost){
+
+    if(position > 0 && position < this->individuals.at(0).getSize() && newCost > 0){
+        this->individuals.at(position).setCost(newCost);
+    }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 void Population::print(){
 
     cout << "Tamaño de la población: " << this->getSize() <<endl;

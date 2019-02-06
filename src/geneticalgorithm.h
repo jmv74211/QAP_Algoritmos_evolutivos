@@ -25,6 +25,8 @@ class GeneticAlgorithm{
 
          void newLamarckGeneration(int iterations);
 
+         void newBaldwinGeneration(int iterations);
+
          void sort();
 
          Individual binaryTournamet(Individual individual1, Individual individual2);
@@ -37,6 +39,11 @@ class GeneticAlgorithm{
 
          void checkBestIndividual();
 
+         void lamarckEvolution(int iterations);
+
+         void baldwinEvolution(int iterations);
+
+         void fastEvolution(int generationIterations);
 
 
         // GETTERS Y SETTERS

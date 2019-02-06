@@ -1,19 +1,40 @@
 #include <iostream>
+#include <cstdlib>
+#include <ctime>
+
+
 #include "data.h"
 #include "geneticalgorithm.h"
 
 using namespace std;
 
-int main(){
+int main( int argc, char* argv[] ){
 
-    const int populationSeed = 2;
+    /*const int populationSeed = 2;
     const int geneticAlgorithmSeed = 2;
     const int individualsNum = 60;
     const int generationNum = 60000;
-    const int numIterations = 60000;
+    const int numIterations = 60000;*/
+
+    //Data data = Data("chr22a.dat");
+
+    //Data data = Data("tai256c.dat");
+
+    char *filename = argv[1];
+    int generationNum = atoi(argv[2]);
+    int populationSeed = atoi(argv[3]);
+    string option = argv[4];
+    string subdirectory;
+    int geneticAlgorithmSeed = populationSeed;
+    const int individualsNum = 60;
+    unsigned t0, t1;
+    double time;
+
+    t0=clock();
+
+    Data data = Data(filename);
 
 
-    Data data = Data("chr22a.dat");
 
     Population population = Population(populationSeed, individualsNum, data);
 
@@ -21,18 +42,116 @@ int main(){
 
     GeneticAlgorithm geneticAlgorithm = GeneticAlgorithm(data,population,geneticAlgorithmSeed);
 
-    // population.print();
+    if(option == "lamarck"){
+        cout << "Ejecutando evolución de lamarck" << endl;
+        subdirectory="lamarckEvolution";
+        geneticAlgorithm.lamarckEvolution(generationNum);
+    }
+    else if((option == "baldwin")){
+        cout << "Ejecutando evolución de baldwin " << endl;
+        subdirectory="baldwinEvolution";
+        geneticAlgorithm.baldwinEvolution(generationNum);
+    }
+    else{
+        cout << "Ejecutando evolución genética sin optimización local" << endl;
+        subdirectory="fastEvolution";
+        geneticAlgorithm.fastEvolution(generationNum);
+    }
 
+
+    string outName = "logs/" + subdirectory + "/log_BEST_RESULT_"+ to_string(generationNum) + "_generations_" + (string) filename + ".txt";
+
+    ofstream outfile (outName);
+
+    cout << endl << endl << endl << endl << endl;
+    cout << " --------------------------------------------------------------" << endl;
+
+    cout << "La mejor solución encontrada tiene coste = " << geneticAlgorithm.getBestIndividual().getCost()
+         << " y pertenece al individuo --> ";
+
+    geneticAlgorithm.getBestIndividual().print();
+    cout << endl;
+
+    cout << " --------------------------------------------------------------" << endl;
+    cout << endl << endl << endl << endl << endl;
+
+
+    outfile << "La mejor solución encontrada tiene coste = " << geneticAlgorithm.getBestIndividual().getCost()
+            << " y pertenece al individuo --> ";
+
+
+    int limit =  geneticAlgorithm.getPopulation().getIndividual(0).getSize();
+
+    outfile << "[ ";
+    for(int j = 0 ; j < limit; ++j){
+        outfile << geneticAlgorithm.getBestIndividual().getVectorSolutions().at(j)  << " ";
+    }
+     outfile << " ]" << endl;
+
+    t1 = clock();
+    time = (double(t1-t0)/CLOCKS_PER_SEC);
+
+
+    outfile  << endl << endl <<  "La ejecución del programa ha tardado: " << time << "s" <<endl;
+
+    outfile.close();
+
+    cout  <<  endl << endl <<  "La ejecución del programa ha tardado: " << time << "s" <<endl <<endl <<endl;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /*
+     * TEST PARA CALCULAR EL COSTE DE UN INDIVIDUO
+    vector<int> individual1;
+    individual1.push_back(20);individual1.push_back(6);individual1.push_back(3);individual1.push_back(14);individual1.push_back(19);
+    individual1.push_back(1);individual1.push_back(10);individual1.push_back(13);individual1.push_back(9);individual1.push_back(12);
+    individual1.push_back(18);individual1.push_back(7);individual1.push_back(21);individual1.push_back(0);individual1.push_back(5);
+    individual1.push_back(15);individual1.push_back(11);individual1.push_back(8);individual1.push_back(2);individual1.push_back(17);
+    individual1.push_back(16);individual1.push_back(4);
+
+    Individual individual = Individual(data,2,individual1);
+
+    cout << individual.getCost() << endl;
+
+
+    */
+
+
+
+    /*
+     *  PRUEBA DE GENERACIÓN PADRE, HIJO Y MUTACIÓN
     cout << endl << endl << endl;
 
     geneticAlgorithm.newLamarckGeneration(numIterations);
 
-    // geneticAlgorithm.getPopulation().print();
+
 
     int initalCost = population.calculatePoblationCost();
     int optimizedCost = geneticAlgorithm.getPopulation().calculatePoblationCost();
-
-   // cout << endl << endl << " ####################################### " <<endl <<endl;
 
     geneticAlgorithm.generateParentsGeneration();
 
@@ -40,21 +159,12 @@ int main(){
 
     int parentsCost = geneticAlgorithm.getPopulation().calculatePoblationCost();
 
-    // cout << "Coste inicial = " << initalCost  << endl;
-    // cout << "Coste optimizado = " << optimizedCost << endl;
-    // cout << "Coste padres = " << parentsCost << endl;
-
-   //  cout << endl << endl << endl << endl<< endl << endl<< endl << endl<< endl << endl<< endl << endl;
 
     geneticAlgorithm.generateChildrenGeneration();
 
     int childrenCost = geneticAlgorithm.getPopulation().calculatePoblationCost();
 
     geneticAlgorithm.getPopulation().print();
-
-    /*for( int i = 0; i < geneticAlgorithm.getPopulation().getSize(); ++i){
-        cout << geneticAlgorithm.getPopulation().getIndividual(i).getCost() << endl;
-    }*/
 
     cout << "Coste inicial = " << initalCost  << endl;
     cout << "Coste optimizado = " << optimizedCost << endl;
@@ -75,6 +185,22 @@ int main(){
     int coste2 = geneticAlgorithm.getPopulation().getIndividual(59).getCost();
     cout << "Coste 1 = " << coste1 <<endl;
     cout << "Coste 2 = " << coste2 <<endl;
+
+         FIN PRUEBA DE GENERACIÓN PADRE, HIJO Y MUTACIÓN
+    */
+
+
+
+
+
+
+
+
+
+
+
+
+
 
    /*for( int i = 0; i < geneticAlgorithm.getPopulation().getSize(); ++i){
        cout << geneticAlgorithm.getPopulation().getIndividual(i).getCost() << endl;

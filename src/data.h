@@ -3,6 +3,7 @@
 
 #include <fstream>
 #include <vector>
+#include <cstring>
 
 using namespace std;
 
@@ -15,6 +16,8 @@ class Data{
         vector<vector<int> > distances;
 
         int size;
+
+        string filename;
 
     public:
 
@@ -31,6 +34,8 @@ class Data{
         int getFactory(unsigned i, unsigned j);
 
         int getDistance(unsigned i, unsigned j);
+
+        string getFilename();
 
         void readFile(const char * filename);
 

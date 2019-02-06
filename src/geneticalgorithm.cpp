@@ -3,6 +3,8 @@
 #include <algorithm>
 
 #include <iostream>
+#include <fstream>
+#include <ctime>
 
 using namespace std;
 
@@ -15,7 +17,7 @@ GeneticAlgorithm::GeneticAlgorithm(){}
 GeneticAlgorithm::GeneticAlgorithm(Data data, int seed){
 
      this->data = data;
-     this->mutationProbability = 0.01;
+     this->mutationProbability = 0.001;
      this->selectionProbability = 0.8;
      this->seed = seed;
      this->bestIndividual = Individual(data,seed);
@@ -55,6 +57,31 @@ void GeneticAlgorithm::newLamarckGeneration(int iterations){
 
     // Si el mejor individuo de la generación es mejor que el mejor individuo general encontrado, se actualiza
     this->checkBestIndividual();
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void GeneticAlgorithm::newBaldwinGeneration(int iterations){
+
+    Individual newIndividual;
+    Optimizer optimizer = Optimizer();
+
+    // Iteramos sobre la población
+    for(int i = 0; i < this->population.getSize(); ++i){
+
+        // Generamos la mejor solución utilizando el algoritmo de búsqueda local
+        newIndividual = optimizer.localSearch_1(this->data,this->population.getIndividual(i),iterations);
+
+        // Establecemos como mejor coste del individuo al de su vecino optimizado.
+        int newCost = newIndividual.getCost();
+
+        // Copiamos al mismo individuo para modificar solo su coste
+        Individual individualCopy = Individual(this->data, this->seed, this->population.getIndividual(i).getVectorSolutions());
+        individualCopy.setCost(newCost);
+
+        this->population.setIndividual(individualCopy,i);
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -192,7 +219,7 @@ void GeneticAlgorithm::generateParentsGeneration(){
     int random1,random2;
 
     Individual winner;
-
+    // Cogemos dos invividuos aleatoriamente, y se selecciona uno por torneo. Ese vencedor se añade a la población
     for(int i = 0; i < selectionNum; ++i){
         random1 = rand() % this->population.getSize();
         random2 = rand() % this->population.getSize();
@@ -233,7 +260,7 @@ void GeneticAlgorithm::generateChildrenGeneration(){
     int individualSize = this->population.getIndividual(0).getSize();
 
     // Mitad del individuo
-    //int individualCenter = (int) ( individualSize / (rand() % (individualSize-2)) );
+      //int individualCenter = (int) ( individualSize / (rand() % (individualSize-2)) );
       int individualCenter = (int) ( individualSize / 2);
 
     vector<Individual> newIndividuals;
@@ -294,9 +321,7 @@ void GeneticAlgorithm::generateChildrenGeneration(){
                 father2 = this->population.getIndividual(random2);
                 fatherHasBeenCrossed.at(random2) = true;
 
-
-
-                selected = true;
+                selected = true; // true para pasar a la siguiente iteración
             }
         }
 
@@ -368,6 +393,8 @@ void GeneticAlgorithm::generateChildrenGeneration(){
 
 void GeneticAlgorithm::mutate(int position){
 
+    cout << "El individuo está mutando..." << endl;
+
     int random1,random2;
     // Obtenemos el tamaño del individuo
     int individualSize = this->population.getIndividual(0).getSize();
@@ -386,6 +413,7 @@ void GeneticAlgorithm::mutate(int position){
     int aux = individualSolutions.at(random1);
     individualSolutions.at(random1) = individualSolutions.at(random2);
     individualSolutions.at(random2) = aux;
+
 
     // Actualizamos la mutación del individuo en nuestra población
     //this->population.getIndividual(position).setVectorSolutions(individualSolutions);
@@ -426,3 +454,214 @@ void GeneticAlgorithm::setBestIndividual(Individual newBestIndividual){
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Algoritmo que calcula al mejor vecino y reemplaza al individuo
+void GeneticAlgorithm::lamarckEvolution(int generationIterations){
+
+    const int searchAlgorithmIterations = 60; // Número de iteraciones máximas para el algoritmo de optimización local
+    int randomNum; // Número aleatorio para la mutación
+    int mutationNumber; // Número límite según la probabilidad de mutación
+    double time; // Variable para medir el tiempo
+
+    unsigned t0, t1;
+
+    // Generamos el límite para el número aleatorio. Cuidamos no hacer la operación módulo 0
+    if(this->mutationProbability != 0)
+        mutationNumber= 1 / this->mutationProbability;
+    else
+        mutationNumber = 1;
+
+    // Nombre del fichero de salida
+    ofstream outfile ("logs/lamarckEvolution/log_"+ this->data.getFilename() +".txt");
+
+    // Iteramos sobre el número de generaciones
+    for(int i = 0; i < generationIterations; ++i){
+
+        t0=clock();
+
+        // Se calcula un número aleatorio comprendido entre 0 y el límite.
+        randomNum = rand()%mutationNumber;
+
+        // Se genera la población de lamarck(individuos optimizados según óptimo local y transformados)
+        this->newLamarckGeneration(searchAlgorithmIterations);
+
+        // Se genera la selección de los padres y se actualiza la población
+        this->generateParentsGeneration();
+
+        // Se actualiza la población con los hijos resultados de la combinación entre padres (2 padres = 2 hijos).
+        this->generateChildrenGeneration();
+
+        // Si por ejemplo el número aleatorio es 2, realizamos la mutación del individuo
+        if(randomNum == 2){
+            this->mutate( rand() % this->population.getSize() );
+        }
+
+        // Se comprueba si se ha mejorado la solución actual, en tal caso se actualiza
+        this->checkBestIndividual();
+
+        t1 = clock();
+        time = (double(t1-t0)/CLOCKS_PER_SEC); // Calculamos el tiempo de ejecución en el cálculo de la nueva población
+
+        // Se muestra la información resultante por pantalla
+        cout << "Semilla = " <<  this->seed << " || Generación " << this->generationNumber << "|| Coste = " << this->getPopulation().getBestIndividual().getCost()
+             << " || Mejor coste = " << this->getBestIndividual().getCost()  << " ||  Tiempo empleado = " << time
+             << " || mejor solución = ";
+        this->getBestIndividual().print();
+        cout << endl;
+
+        // Generamos un registro cada 10 generaciones
+        if(i%10== 0){
+            outfile << this->generationNumber << "\t" << this->getPopulation().getBestIndividual().getCost()
+                    <<"\t" << this->getBestIndividual().getCost()  << "\t" << time << endl;
+        }
+        // Incrementamos en uno el número de generaciones de la población del algoritmo.
+        this->generationNumber++;
+    }
+
+    outfile << this->generationNumber << "\t" << this->getPopulation().getBestIndividual().getCost()
+            <<"\t" << this->getBestIndividual().getCost()  << "\t" << time << endl;
+
+    outfile.close();
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Algoritmo que calcula utiliza al mejor vecino cercano pero sin reemplazar al individuo.
+void GeneticAlgorithm::baldwinEvolution(int generationIterations){
+
+    const int searchAlgorithmIterations = 60;
+    int randomNum; // Número aleatorio para la mutación
+    int mutationNumber; // Número límite según la probabilidad de mutación
+    double time; // Variable para medir el tiempo
+
+    unsigned t0, t1;
+
+    // Generamos el límite para el número aleatorio. Cuidamos no hacer la operación módulo 0
+    if(this->mutationProbability != 0)
+        mutationNumber= 1 / this->mutationProbability;
+    else
+        mutationNumber = 1;
+
+    // Nombre del fichero de salida
+    ofstream outfile ("logs/baldwinEvolution/log_"+ this->data.getFilename() +".txt");
+
+    // Iteramos sobre el número de generaciones
+    for(int i = 0; i < generationIterations; ++i){
+
+        t0=clock();
+
+        // Se calcula un número aleatorio comprendido entre 0 y el límite.
+        randomNum = rand()%mutationNumber;
+
+        // Se genera la población de baldwin(Coste del mejor individuo vecino pero sin transformarse)
+        this->newBaldwinGeneration(searchAlgorithmIterations);
+
+        // Se genera la selección de los padres y se actualiza la población
+        this->generateParentsGeneration();
+
+        // Se actualiza la población con los hijos resultados de la combinación entre padres (2 padres = 2 hijos).
+        this->generateChildrenGeneration();
+
+        // Si por ejemplo el número aleatorio es 2, realizamos la mutación del individuo
+        if(randomNum == 2){
+            this->mutate( rand() % this->population.getSize() );
+        }
+
+        // Se comprueba si se ha mejorado la solución actual, en tal caso se actualiza
+        this->checkBestIndividual();
+
+        t1 = clock();
+        time = (double(t1-t0)/CLOCKS_PER_SEC);
+
+        // Se muestra la información resultante por pantalla
+        cout << "Semilla = " <<  this->seed << " || Generación " << this->generationNumber << "|| Coste = " << this->getPopulation().getBestIndividual().getCost()
+             << " || Mejor coste = " << this->getBestIndividual().getCost()  << " ||  Tiempo empleado = " << time
+             << " || mejor solución = ";
+        this->getBestIndividual().print();
+        cout << endl;
+
+        // Generamos un registro cada 10 generaciones
+        if(i%10 == 0){
+            outfile << this->generationNumber << "\t" << this->getPopulation().getBestIndividual().getCost()
+                    <<"\t" << this->getBestIndividual().getCost()  << "\t" << time << endl;
+        }
+        // Incrementamos en uno el número de generaciones de la población del algoritmo.
+        this->generationNumber++;
+    }
+
+    outfile << this->generationNumber << "\t" << this->getPopulation().getBestIndividual().getCost()
+            <<"\t" << this->getBestIndividual().getCost()  << "\t" << time << endl;
+
+    outfile.close();
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Algoritmo evolutivo que no utiliza algoritmo de optimización local para generar la población inicial optimizada tras cada generación.
+void GeneticAlgorithm::fastEvolution(int generationIterations){
+
+    int randomNum; // Número aleatorio para la mutación
+    int mutationNumber; // Número límite según la probabilidad de mutación
+    double time; // Variable para medir el tiempo
+
+    unsigned t0, t1; // Valores donde se va almacenar temporalmente los valores del tiempo
+
+    // Generamos el límite para el número aleatorio. Cuidamos no hacer la operación módulo 0
+    if(this->mutationProbability != 0)
+        mutationNumber= 1 / this->mutationProbability;
+    else
+        mutationNumber = 1;
+
+    // Creamos un fichero para almacenar los resultados.
+    ofstream outfile ("logs/fastEvolution/log_"+ this->data.getFilename() +".txt");
+
+    for(int i = 0; i < generationIterations; ++i){
+
+        t0=clock();
+
+        // Se calcula un número aleatorio comprendido entre 0 y el límite.
+        randomNum = rand()%mutationNumber;
+
+        // Se genera la selección de los padres y se actualiza la población
+        // Pasamos valor false porque la generación no es Baldwiniana
+        this->generateParentsGeneration();
+
+        // Se actualiza la población con los hijos resultados de la combinación entre padres (2 padres = 2 hijos).
+        this->generateChildrenGeneration();
+
+        // Si por ejemplo el número aleatorio es 2, realizamos la mutación del individuo
+        if(randomNum == 2){
+            this->mutate( rand() % this->population.getSize() );
+        }
+
+        // Se comprueba si se ha mejorado la solución actual, en tal caso se actualiza
+        this->checkBestIndividual();
+
+        t1 = clock();
+        time = (double(t1-t0)/CLOCKS_PER_SEC);
+
+        // Se muestra la información resultante por pantalla
+        cout << "Semilla = " <<  this->seed << " || Generación " << this->generationNumber << "|| Coste = " << this->getPopulation().getBestIndividual().getCost()
+             << " || Mejor coste = " << this->getBestIndividual().getCost()  << " ||  Tiempo empleado = " << time
+             << " || mejor solución = ";
+        this->getBestIndividual().print();
+        cout << endl;
+
+        // Generamos un registro cada 10 generaciones
+        if(i%10 == 0){
+            outfile << this->generationNumber << "\t" << this->getPopulation().getBestIndividual().getCost()
+                    <<"\t" << this->getBestIndividual().getCost()  << "\t" << time << endl;
+        }
+
+        // Incrementamos en uno el número de generaciones de la población del algoritmo.
+        this->generationNumber++;
+    }
+
+    outfile << this->generationNumber << "\t" << this->getPopulation().getBestIndividual().getCost()
+            <<"\t" << this->getBestIndividual().getCost()  << "\t" << time << endl;
+
+    outfile.close();
+}
+
+
+
