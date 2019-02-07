@@ -103,6 +103,8 @@ operadores.
 
 El modelo conceptual de la aplicación se resume en la siguiente figura:
 
+![img](https://raw.githubusercontent.com/jmv74211/QAP_Algoritmos_evolutivos/master/images/figura2.png)
+
 ---
 
 # 5. Descripción de los algoritmos utilizados
@@ -122,10 +124,14 @@ Cada individuo se generará inicialmente de la siguiente manera: Se parte con un
 totalmente inicializado desde 0 hasta n-1, y la idea es intercambiar las posiciones de forma
 aleatoria. El pseudocódigo es el siguiente:
 
+![img](https://raw.githubusercontent.com/jmv74211/QAP_Algoritmos_evolutivos/master/images/figura3.png)
+
 ### 5.1.2 Calcular coste de cada individuo
 
 Cada individuo tendrá un coste asociado que se corresponderá con la bondad de la solución
 que representa. El cálculo de dicho coste se ha realizado de la siguiente forma:
+
+![img](https://raw.githubusercontent.com/jmv74211/QAP_Algoritmos_evolutivos/master/images/figura4.png)
 
 ### 5.1.3 Ajustar nuevo coste del individuo
 
@@ -134,6 +140,8 @@ permutan solo dos valores (coste computacionalmente alto), se ha realizado una n
 función para poder recalcular el coste, partiendo como base el coste actual y calculando la
 diferencia que supondría respecto al nuevo cambio (permutación).
 
+![img](https://raw.githubusercontent.com/jmv74211/QAP_Algoritmos_evolutivos/master/images/figurai.png)
+
 ## 5.2 Población
 
 ### 5.2.1 Generación de la población
@@ -141,11 +149,15 @@ diferencia que supondría respecto al nuevo cambio (permutación).
 Para la generación de las poblaciones se generan una serie de individuos aleatorios y se
 añaden a dicha población hasta completarla.
 
+![img](https://raw.githubusercontent.com/jmv74211/QAP_Algoritmos_evolutivos/master/images/figura5.png)
+
 ## 5.3 Optimización local
 
 Para optimizar los individuos que inicialmente se generan en la población se ha utilizado una
 búsqueda local del mejor vecino. En este caso he seguido siguiente pseudocódigo[1] para
 realizar mi implementación:
+
+![img](https://raw.githubusercontent.com/jmv74211/QAP_Algoritmos_evolutivos/master/images/figura6.png)
 
 
 ## 5.4 Algoritmo genético
@@ -159,6 +171,8 @@ Como se ha comentado anteriormente, se va a implementar una variante lamarckiana
 balwidiana y sin utilizar optimización local. El proceso básico que va a generar este algoritmo
 en cada iteración es el siguiente:
 
+![img](https://raw.githubusercontent.com/jmv74211/QAP_Algoritmos_evolutivos/master/images/figura7.png)
+
 ### 5.4.1 Población inicial
 
 Tal y como se ha comentado anteriormente, la generación de individuos se genera de forma
@@ -168,9 +182,15 @@ según la variante del algoritmo que se utiliza:
 
 - **Variante lamarckiana:** Los nuevos individuos resultantes de la optimización local
     reemplazan al individuo de dicha población.
+
+    ![img](https://raw.githubusercontent.com/jmv74211/QAP_Algoritmos_evolutivos/master/images/figura8.png)
+
 - **Variante balwidiana:** Se calculan los individuos resultantes de la optimización local,
     pero en este caso no reemplazan al individuo de la población, sino que el coste de esos
     individuos resultantes se utilizarán posteriormente en la selección.
+
+    ![img](https://raw.githubusercontent.com/jmv74211/QAP_Algoritmos_evolutivos/master/images/figura9.png)
+
 - **Variante sin optimización local:** No se aplica el algoritmo de optimización local.
 
 ### 5.4.2 Selección de individuos
@@ -183,17 +203,21 @@ convertirse en “padres” se tienen en cuenta dos factores:
     selección. El número restante de individuos es insertado directamente de la población
     inicial. Se añadirá el mejor individuo, el peor, y los mejores individuos restantes de la
     población (ordenada ascendentemente) hasta completar la población.
+
 - **El segundo factor es la selección por torneo binario**. Este es el operador que se ha
     utilizado para realizar la selección, en el que se enfrentan dos individuos escogidos de
     forma aleatoria y se devuelve el mejor individuo para que pase a formar parte de los
     “padres”.
 
+    ![img](https://raw.githubusercontent.com/jmv74211/QAP_Algoritmos_evolutivos/master/images/figura10.png)
 
 ### 5.4.3 Generación de padres
 
 Tal y como se ha comentado en el punto anterior, la generación de los padres es realizada
 mediante la selección por torneo binario y parte de los mejores y el peor individuo de la
 generación inicial. Todo este procedimiento se describe a continuación:
+
+![img](https://raw.githubusercontent.com/jmv74211/QAP_Algoritmos_evolutivos/master/images/figura11.png)
 
 ### 5.4.4 Cruce de individuos
 
@@ -202,6 +226,8 @@ para generar a la nueva generación “hija”. El operador de cruce que se ha e
 **cruce en un punto** , en el que se selecciona un punto de cruce aleatoriamente, se dividen los
 padres en ese punto y se crean los hijos intercambiando partes de los cromosomas. En la
 siguiente figura se muestra un ejemplo de este tipo de cruce:
+
+![img](https://raw.githubusercontent.com/jmv74211/QAP_Algoritmos_evolutivos/master/images/figura12.png)
 
 En el proceso de cruce, se seleccionarán dos padres de forma aleatoria y darán lugar a dos
 hijos resultantes (como se puede observar en la figura anterior). Es importante destacar que
@@ -220,6 +246,8 @@ el pseudocódigo, pero en el código real implementado se realiza todas las veri
 proceso se realice correctamente. Para más información se puede consultar el método correspondiente
 *generateChildrenGeneration* en el archivo de [geneticAlgorithm.cpp](https://github.com/jmv74211/QAP_Algoritmos_evolutivos/blob/master/src/geneticalgorithm.cpp)
 
+![img](https://raw.githubusercontent.com/jmv74211/QAP_Algoritmos_evolutivos/master/images/figura13.png)
+
 ### 5.4.6 Mutación de individuos
 
 Una vez que se ha generado la población de hijos, es posible que algún individuo de dicha
@@ -227,6 +255,8 @@ población pueda mutar. Esta posibilidad está basada en una probabilidad de mut
 establecida en el algoritmo genético. Dicha mutación se calcula mediante un número aleatorio
 generado según la probabilidad de mutación. El operador que se ha utilizado para realizar la
 mutación es mediante **intercambio**. Su funcionamiento se describe en la siguiente figura.
+
+![img](https://raw.githubusercontent.com/jmv74211/QAP_Algoritmos_evolutivos/master/images/figura14.png)
 
 
 El pseudocódigo de este algoritmo es el siguiente:
@@ -249,6 +279,8 @@ El criterio de parada del algoritmo es un valor de n generaciones, ya que no se 
 A continuación se muestra el pseudocódigo correspondiente al proceso de evaluación según la
 variante (lamarkiana, baldwidiana o sin optimización local).
 
+![img](https://raw.githubusercontent.com/jmv74211/QAP_Algoritmos_evolutivos/master/images/figura15.png)
+
 ---
 
 ### 6. Análisis de resultados
@@ -267,15 +299,20 @@ llamado “chr22a.dat” y se han obtenido los siguientes datos:
 
 Empezamos analizando el mejor resultado obtenido para un número de generaciones de 10.000.
 
+![img](https://raw.githubusercontent.com/jmv74211/QAP_Algoritmos_evolutivos/master/images/figura17.png)
+
 Como podemos observar, se ha obtenido un mejor resultado en la variante lamarckiana y
 como observación decir que en este caso de prueba para este número de ejecuciones, la
 variante baldwidiana y sin optimización local prácticamente han dado casi el mismo resultado.
 Posteriormente comprobaremos para otros ejemplos si esta situación sigue ocurriendo.
 
+![img](https://raw.githubusercontent.com/jmv74211/QAP_Algoritmos_evolutivos/master/images/figura18.png)
 
 Respecto al tiempo empleado por generación, podemos observar que la variante balwidiana
 requiere de un mayor tiempo de ejecución que el resto, después le sigue la variante
 lamarckiana y por último sin optimización local (como es lógico).
+
+![img](https://raw.githubusercontent.com/jmv74211/QAP_Algoritmos_evolutivos/master/images/figura19.png)
 
 Por último, respecto a la variación en los costes de cada generación, podemos observar que en
 la variante lamarckiana suele permanecer estable hasta que encuentra un coste menos
@@ -293,14 +330,19 @@ Ahora se va a analizar la misma información pero en este caso se ha escogido un
 datos de mayor tamaño con un número de 500 generaciones. En concreto dicho conjunto de
 datos se llama *“lipa60b”*.
 
+![img](https://raw.githubusercontent.com/jmv74211/QAP_Algoritmos_evolutivos/master/images/figura20.png)
+
 Como se puede observar, también la variante lamarckiana ha obtenido un mejor resultado que
 el resto.
+
+![img](https://raw.githubusercontent.com/jmv74211/QAP_Algoritmos_evolutivos/master/images/figura21.png)
 
 Respecto al tiempo empleado para cada generación, se han obtenido los mismos resultados
 que para el conjunto de datos anterior, es decir, la variante que mayor tiempo emplea para
 una generación es la variante balwidiana seguida por la lamarckiana y por último por la
 variante sin óptimo local.
 
+![img](https://raw.githubusercontent.com/jmv74211/QAP_Algoritmos_evolutivos/master/images/figura22.png)
 
 En este caso, podemos observar como hay una gran variación entre los costes calculados para
 cada generación en la variante lamarckiana (a gran diferencia del anterior caso). La variante
@@ -310,14 +352,19 @@ decreciente.
 Por último en este análisis previo, se va a realizar las mismas pruebas para otro conjunto de
 datos más grande llamado “tai100a” para un número de 250 generaciones.
 
+![img](https://raw.githubusercontent.com/jmv74211/QAP_Algoritmos_evolutivos/master/images/figura23.png)
+
 Observamos, que para este caso, la variante balwidiana ha dado un mejor resultado que el
 resto. A este tamaño y número de generaciones, podemos ver que la variante sin optimización
 local se queda bastante por atrás que las otras que si lo utilizan.
 
+![img](https://raw.githubusercontent.com/jmv74211/QAP_Algoritmos_evolutivos/master/images/figura24.png)
 
 También observamos que el tiempo de ejecución entre las variantes sigue en la misma línea
 que el resto. La variante balwidiana es el que más tiempo emplea en cálculo de una nueva
 generación, seguido por la variante balwidiana y por último la variante sin optimización local.
+
+![img](https://raw.githubusercontent.com/jmv74211/QAP_Algoritmos_evolutivos/master/images/figura25.png)
 
 Finalmente, visualizamos que los costes de la variante balwidiana han permanecidos estables,
 y sin embargo los de la variante lamarckiana han ido oscilando creciente y decrecientemente.
